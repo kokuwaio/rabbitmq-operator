@@ -1,0 +1,7 @@
+apiVersion: rabbitmq.kokuwa.io/v1beta1
+kind: RabbitmqUser
+metadata:
+  name: rabbitmquser-sample
+spec:
+  # Add fields here
+  foo: bar

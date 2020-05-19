@@ -1,0 +1,128 @@
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqbindings
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqbindings/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqclusters/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqexchanges
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqexchanges/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqpermissons
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqpermissons/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqqueues
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqqueues/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqusers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqusers/status
+  verbs:
+  - get
+  - patch
+  - update

@@ -1,0 +1,95 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: rabbitmqbindings.rabbitmq.kokuwa.io
+spec:
+  group: rabbitmq.kokuwa.io
+  names:
+    kind: RabbitmqBinding
+    listKind: RabbitmqBindingList
+    plural: rabbitmqbindings
+    singular: rabbitmqbinding
+  scope: Namespaced
+  validation:
+    openAPIV3Schema:
+      description: RabbitmqBinding is the Schema for the rabbitmqbindings API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: RabbitmqBindingSpec defines the desired state of RabbitmqBinding
+          properties:
+            arguments:
+              additionalProperties:
+                type: string
+              type: object
+            clusterRef:
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - name
+              - namespace
+              type: object
+            destination:
+              type: string
+            destination_type:
+              type: string
+            properties_key:
+              type: string
+            routing_key:
+              type: string
+            source:
+              type: string
+            vhost:
+              type: string
+          required:
+          - clusterRef
+          - destination
+          - destination_type
+          - routing_key
+          - source
+          - vhost
+          type: object
+        status:
+          description: RabbitmqBindingStatus defines the observed state of RabbitmqBinding
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

@@ -1,0 +1,7 @@
+apiVersion: rabbitmq.kokuwa.io/v1beta1
+kind: RabbitmqPermisson
+metadata:
+  name: rabbitmqpermisson-sample
+spec:
+  # Add fields here
+  foo: bar

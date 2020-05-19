@@ -1,0 +1,20 @@
+# permissions for end users to view rabbitmqqueues.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rabbitmqqueue-viewer-role
+rules:
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqqueues
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqqueues/status
+  verbs:
+  - get

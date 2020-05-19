@@ -1,0 +1,13 @@
+apiVersion: rabbitmq.kokuwa.io/v1beta1
+kind: RabbitmqQueue
+metadata:
+  name: rabbitmqqueue-sample
+spec:
+  name: rico-test
+  vhost: /
+  clusterRef:
+    name: rabbitmqcluster-sample
+    namespace: kiwios
+  settings:
+    type: ""
+    durable: false

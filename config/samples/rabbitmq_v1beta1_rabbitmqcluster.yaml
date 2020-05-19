@@ -1,0 +1,12 @@
+apiVersion: rabbitmq.kokuwa.io/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmqcluster-sample
+spec:
+  # Add fields here
+  host: http://localhost:15672
+  user: admin
+  secretRef:
+    name: rabbitmq
+    namespace: kiwios
+    key: rabbitmq-password

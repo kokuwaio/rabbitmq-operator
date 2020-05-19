@@ -1,0 +1,22 @@
+domain: kokuwa.io
+repo: github.com/kokuwaio/rabbitmq-operator
+resources:
+- group: rabbitmq
+  kind: RabbitmqUser
+  version: v1beta1
+- group: rabbitmq
+  kind: RabbitmqPermisson
+  version: v1beta1
+- group: rabbitmq
+  kind: RabbitmqExchange
+  version: v1beta1
+- group: rabbitmq
+  kind: RabbitmqQueue
+  version: v1beta1
+- group: rabbitmq
+  kind: RabbitmqBinding
+  version: v1beta1
+- group: rabbitmq
+  kind: RabbitmqCluster
+  version: v1beta1
+version: "2"

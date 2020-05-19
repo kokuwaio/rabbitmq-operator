@@ -1,0 +1,16 @@
+apiVersion: rabbitmq.kokuwa.io/v1beta1
+kind: RabbitmqBinding
+metadata:
+  name: rabbitmqbinding-sample
+spec:
+  # Add fields here
+  vhost: /
+  source: rico-test
+  destination: rico-test
+  destination_type: queue
+  routing_key: "#"
+  clusterRef:
+    name: rabbitmqcluster-sample
+    namespace: kiwios
+
+
