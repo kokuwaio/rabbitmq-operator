@@ -56,5 +56,27 @@ jobs:
         run: |
           docker pull rabbitmq:3.8-management
           export KUBECONFIG="$HOME/.kube/config"
-          cat $KUBECONFIG
           make test
+      - name: Convert coverage to lcov
+        uses: jandelgado/gcov2lcov-action@v1.0.2
+        with:
+          infile: cover.out
+          outfile: coverage.lcov
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          flag-name: run-${{ matrix.k8s }}
+          parallel: true
+          path-to-lcov: coverage.lcov
+
+  finish:
+    needs:
+      - install-chart
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel-finished: true
