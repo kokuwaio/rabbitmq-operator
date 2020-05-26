@@ -5,14 +5,13 @@ on: [pull_request]
 env:
   CHANGE_MINIKUBE_NONE_USER: true
   INSTALL_K8S_TOOLS: 1
-  IMG: kokuwaio/rabbitmq-operator
+  IMG: kokuwaio/rabbitmq-operator/operator
 jobs:
 
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-
       - name: Set up Go 1.14
         uses: actions/setup-go@v1
         with:
