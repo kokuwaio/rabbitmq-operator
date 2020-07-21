@@ -18,9 +18,15 @@ package controllers
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
+	"fmt"
+	"io/ioutil"
 
 	"github.com/go-logr/logr"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -74,34 +80,54 @@ func (r *RabbitmqUserReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 		return reconcile.Result{}, err
 	}
 
-	// information about individual queue
-	_, err = rabbitClient.GetUser(instance.Spec.Name)
+	secret := &corev1.Secret{}
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Spec.PasswordSecretRef.Name, Namespace: instance.Spec.PasswordSecretRef.Namespace}, secret)
 	if err != nil {
-		_, err = rabbitClient.PutUser(instance.Spec.Name, r.transformSettings(instance.Spec.Settings))
-		if err != nil {
-			r.UpdateErrorState(ctx, instance, err)
-			return reconcile.Result{}, err
-		}
+		r.UpdateErrorState(ctx, instance, err)
+		return reconcile.Result{}, err
 	}
+	var password string
+	if instance.Spec.PasswordSecretRef.Key != "" {
+		password = string(secret.Data[instance.Spec.PasswordSecretRef.Key])
+	} else {
+		password = string(secret.Data["password"])
+	}
+	r.Log.Info(fmt.Sprintf("create user with: %s %s", instance.Spec.Name, password))
+	res, err := rabbitClient.PutUser(instance.Spec.Name, r.transformSettings(instance.Spec, password))
+	if err != nil {
+		r.UpdateErrorState(ctx, instance, err)
+		return reconcile.Result{}, err
+	}
+	if res.StatusCode > 299 {
+		bodyBytes, err := ioutil.ReadAll(res.Body)
+		err = fmt.Errorf("error updating user: %s %s", res.Status, string(bodyBytes))
+		r.UpdateErrorState(ctx, instance, err)
+		return reconcile.Result{}, err
+	}
+
 	instance.Status.Status = "Success"
 	instance.Status.Error = ""
 	err = r.Update(ctx, instance)
 	return ctrl.Result{}, nil
 }
 
-func (r *RabbitmqUserReconciler) transformSettings(settings rabbitmqv1beta1.RabbitmqUserSetting) rabbithole.UserSettings {
+func (r *RabbitmqUserReconciler) transformSettings(spec rabbitmqv1beta1.RabbitmqUserSpec, password string) rabbithole.UserSettings {
+	var salt = [4]byte{}
+	salt, _ = generateSalt()
+	hash := generateHashSha256(salt, password)
+
+	hash = append(salt[:], []byte(hash[:])...)
 	return rabbithole.UserSettings{
-		Name:             "",
-		Tags:             "",
-		Password:         "",
-		PasswordHash:     "",
-		HashingAlgorithm: "",
+		Tags:             spec.Tags,
+		PasswordHash:     base64.StdEncoding.EncodeToString(hash[:]),
+		HashingAlgorithm: rabbithole.HashingAlgorithmSHA256,
 	}
 }
 
 func (r *RabbitmqUserReconciler) UpdateErrorState(context context.Context, instance *rabbitmqv1beta1.RabbitmqUser, err error) {
 	instance.Status.Status = "Error"
 	instance.Status.Error = err.Error()
+	r.Log.Error(err, err.Error())
 	err = r.Update(context, instance)
 }
 
@@ -109,4 +135,16 @@ func (r *RabbitmqUserReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&rabbitmqv1beta1.RabbitmqUser{}).
 		Complete(r)
+}
+
+func generateSalt() ([4]byte, error) {
+	salt := [4]byte{}
+	_, err := rand.Read(salt[:])
+	salt = [4]byte{0, 0, 0, 0}
+	return salt, err
+}
+
+func generateHashSha256(salt [4]byte, password string) []byte {
+	temp_hash := sha256.Sum256(append(salt[:], []byte(password)...))
+	return temp_hash[:]
 }

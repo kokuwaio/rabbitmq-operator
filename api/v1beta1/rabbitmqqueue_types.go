@@ -28,6 +28,12 @@ type RabbitmqClusterRef struct {
 	Namespace string `json:"namespace"`
 }
 
+type PasswordSecretRef struct {
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+	Key       string `json:"key"`
+}
+
 type RabbitmqQueueSetting struct {
 	Type string `json:"type"`
 	// kubebuilder:default=false

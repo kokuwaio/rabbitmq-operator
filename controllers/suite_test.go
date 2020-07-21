@@ -187,6 +187,13 @@ func SetupTest(ctx context.Context) *corev1.Namespace {
 		err = userController.SetupWithManager(mgr)
 		Expect(err).NotTo(HaveOccurred(), "failed to setup user controller")
 
+		permissonController := &RabbitmqPermissionReconciler{
+			Client: mgr.GetClient(),
+			Log:    logf.Log,
+		}
+		err = permissonController.SetupWithManager(mgr)
+		Expect(err).NotTo(HaveOccurred(), "failed to setup permisson controller")
+
 		go func() {
 			err := mgr.Start(stopCh)
 			Expect(err).NotTo(HaveOccurred(), "failed to start manager")

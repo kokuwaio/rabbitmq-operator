@@ -29,17 +29,10 @@ type RabbitmqUserSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of RabbitmqUser. Edit RabbitmqUser_types.go to remove/update
-	Name       string              `json:"name,omitempty"`
-	ClusterRef RabbitmqClusterRef  `json:"clusterRef"`
-	Settings   RabbitmqUserSetting `json:"settings"`
-}
-
-type RabbitmqUserSetting struct {
-	Name string `json:"name"`
-	/*Tags:             "",
-	Password:         "",
-	PasswordHash:     "",
-	HashingAlgorithm: "",*/
+	Name              string             `json:"name,omitempty"`
+	Tags              string             `json:"tags,omitempty"`
+	PasswordSecretRef PasswordSecretRef  `json:"secretRef,omitempty"`
+	ClusterRef        RabbitmqClusterRef `json:"clusterRef"`
 }
 
 // RabbitmqUserStatus defines the observed state of RabbitmqUser
@@ -51,7 +44,8 @@ type RabbitmqUserStatus struct {
 }
 
 // +kubebuilder:object:root=true
-
+// +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
+// +kubebuilder:printcolumn:name="Error",type=string,JSONPath=`.status.error`
 // RabbitmqUser is the Schema for the rabbitmqusers API
 type RabbitmqUser struct {
 	metav1.TypeMeta   `json:",inline"`
