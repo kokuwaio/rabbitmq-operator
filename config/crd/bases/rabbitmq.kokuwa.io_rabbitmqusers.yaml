@@ -34,13 +34,43 @@ spec:
         spec:
           description: RabbitmqUserSpec defines the desired state of RabbitmqUser
           properties:
-            foo:
+            clusterRef:
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - name
+              - namespace
+              type: object
+            name:
               description: Foo is an example field of RabbitmqUser. Edit RabbitmqUser_types.go
                 to remove/update
               type: string
+            settings:
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+              type: object
+          required:
+          - clusterRef
+          - settings
           type: object
         status:
           description: RabbitmqUserStatus defines the observed state of RabbitmqUser
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
           type: object
       type: object
   version: v1beta1

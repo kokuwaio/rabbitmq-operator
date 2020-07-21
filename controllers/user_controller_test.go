@@ -16,8 +16,8 @@ var _ = Context("Inside of a new namespace", func() {
 	ctx := context.TODO()
 	ns := SetupTest(ctx)
 
-	Describe("when no exchange exists", func() {
-		It("should create a new exchange", func() {
+	Describe("when no user exists", func() {
+		It("should create a new user", func() {
 
 			rabbitHost := rabbitConfig.Url
 			rabbitUser := rabbitConfig.User
@@ -26,7 +26,7 @@ var _ = Context("Inside of a new namespace", func() {
 			rabbitClusterName := "test-cluster"
 			secretName := "rabbit-secret"
 			passwordKey := "password"
-			rabbitExchangeName := "test-exchange"
+			rabbitUserName := "test-user"
 
 			secret := &corev1.Secret{
 
@@ -58,34 +58,30 @@ var _ = Context("Inside of a new namespace", func() {
 			Expect(k8sClient.Create(context.Background(), toCreate)).Should(Succeed())
 			time.Sleep(time.Second * 5)
 
-			exchange := &rabbitmqv1beta1.RabbitmqExchange{
+			queue := &rabbitmqv1beta1.RabbitmqUser{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      rabbitExchangeName,
+					Name:      rabbitUserName,
 					Namespace: ns.Name,
 				},
-				Spec: rabbitmqv1beta1.RabbitmqExchangeSpec{
-					Vhost: "/",
-					Name:  rabbitExchangeName,
+				Spec: rabbitmqv1beta1.RabbitmqUserSpec{
+					Name: rabbitUserName,
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
 						Name:      rabbitClusterName,
 						Namespace: ns.Name,
 					},
-					Settings: rabbitmqv1beta1.RabbitmqExchangeSetting{
-						Type:       "fanout",
-						Durable:    false,
-						AutoDelete: false,
-						Arguments:  nil,
+					Settings: rabbitmqv1beta1.RabbitmqUserSetting{
+						Name: "",
 					},
 				},
 			}
 
-			Expect(k8sClient.Create(context.Background(), exchange)).Should(Succeed())
+			Expect(k8sClient.Create(context.Background(), queue)).Should(Succeed())
 			time.Sleep(time.Second * 5)
 
 			client, err := rabbithole.NewClient(rabbitHost, rabbitUser, password)
 			Expect(err).NotTo(HaveOccurred())
 
-			rq, err := client.GetExchange("/", rabbitExchangeName)
+			rq, err := client.GetUser(rabbitUserName)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(rq).ShouldNot(BeNil())
 		})

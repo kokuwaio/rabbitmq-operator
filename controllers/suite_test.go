@@ -112,33 +112,7 @@ var _ = BeforeSuite(func(done Done) {
 	Expect(err).NotTo(HaveOccurred())
 
 	// +kubebuilder:scaffold:scheme
-	ctx := context.Background()
-	req := testcontainers.ContainerRequest{
-		Image:        "rabbitmq:3.8-management",
-		ExposedPorts: []string{"15672/tcp"},
-		Env:          map[string]string{"RABBITMQ_DEFAULT_USER": "admin", "RABBITMQ_DEFAULT_PASS": "password"},
-		WaitingFor:   wait.ForListeningPort("15672"),
-	}
-	rabbitC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-		ContainerRequest: req,
-		Started:          true,
-	})
-	Expect(err).NotTo(HaveOccurred())
 
-	port, err := rabbitC.MappedPort(ctx, "15672")
-	Expect(err).NotTo(HaveOccurred())
-	host, err := rabbitC.Host(ctx)
-	Expect(err).NotTo(HaveOccurred())
-
-	k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
-	Expect(err).ToNot(HaveOccurred())
-	Expect(k8sClient).ToNot(BeNil())
-
-	rabbitConfig = RabbitConfig{
-		Url:      fmt.Sprintf("http://%s:%s", host, port.Port()),
-		User:     "admin",
-		Password: "password",
-	}
 	close(done)
 }, 60)
 
@@ -152,7 +126,34 @@ func SetupTest(ctx context.Context) *corev1.Namespace {
 			ObjectMeta: metav1.ObjectMeta{Name: "testns-" + randStringRunes(5)},
 		}
 
-		err := k8sClient.Create(ctx, ns)
+		req := testcontainers.ContainerRequest{
+			Image:        "rabbitmq:3.8-management",
+			ExposedPorts: []string{"15672/tcp"},
+			Env:          map[string]string{"RABBITMQ_DEFAULT_USER": "admin", "RABBITMQ_DEFAULT_PASS": "password"},
+			WaitingFor:   wait.ForListeningPort("15672"),
+		}
+		rabbitC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+			ContainerRequest: req,
+			Started:          true,
+		})
+		Expect(err).NotTo(HaveOccurred())
+
+		port, err := rabbitC.MappedPort(ctx, "15672")
+		Expect(err).NotTo(HaveOccurred())
+		host, err := rabbitC.Host(ctx)
+		Expect(err).NotTo(HaveOccurred())
+
+		k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})
+		Expect(err).ToNot(HaveOccurred())
+		Expect(k8sClient).ToNot(BeNil())
+
+		rabbitConfig = RabbitConfig{
+			Url:      fmt.Sprintf("http://%s:%s", host, port.Port()),
+			User:     "admin",
+			Password: "password",
+		}
+
+		err = k8sClient.Create(ctx, ns)
 		Expect(err).NotTo(HaveOccurred(), "failed to create test namespace")
 
 		mgr, err := ctrl.NewManager(cfg, ctrl.Options{})
@@ -170,7 +171,21 @@ func SetupTest(ctx context.Context) *corev1.Namespace {
 			Log:    logf.Log,
 		}
 		err = queueController.SetupWithManager(mgr)
-		Expect(err).NotTo(HaveOccurred(), "failed to setup controller")
+		Expect(err).NotTo(HaveOccurred(), "failed to setup queue controller")
+
+		exchangeController := &RabbitmqExchangeReconciler{
+			Client: mgr.GetClient(),
+			Log:    logf.Log,
+		}
+		err = exchangeController.SetupWithManager(mgr)
+		Expect(err).NotTo(HaveOccurred(), "failed to setup exchange controller")
+
+		userController := &RabbitmqUserReconciler{
+			Client: mgr.GetClient(),
+			Log:    logf.Log,
+		}
+		err = userController.SetupWithManager(mgr)
+		Expect(err).NotTo(HaveOccurred(), "failed to setup user controller")
 
 		go func() {
 			err := mgr.Start(stopCh)
@@ -196,6 +211,7 @@ func SetupTest(ctx context.Context) *corev1.Namespace {
 				_, _ = client.DeleteExchange(exchange.Vhost, exchange.Name)
 			}
 		*/
+		cleanupCluster(k8sClient)
 		err := k8sClient.Delete(ctx, ns)
 		Expect(err).NotTo(HaveOccurred(), "failed to delete test namespace")
 	})
@@ -215,6 +231,14 @@ var _ = AfterSuite(func() {
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
+}
+
+func cleanupCluster(k8sClient client.Client) {
+	clusters := &rabbitmqv1beta1.RabbitmqClusterList{}
+	_ = k8sClient.List(context.Background(), clusters)
+	for _, c := range clusters.Items {
+		_ = k8sClient.Delete(context.Background(), &c)
+	}
 }
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz1234567890")
