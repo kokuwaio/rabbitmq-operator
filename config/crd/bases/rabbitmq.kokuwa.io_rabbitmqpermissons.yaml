@@ -8,6 +8,13 @@ metadata:
   creationTimestamp: null
   name: rabbitmqpermissons.rabbitmq.kokuwa.io
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
   group: rabbitmq.kokuwa.io
   names:
     kind: RabbitmqPermisson
@@ -15,6 +22,7 @@ spec:
     plural: rabbitmqpermissons
     singular: rabbitmqpermisson
   scope: Namespaced
+  subresources: {}
   validation:
     openAPIV3Schema:
       description: RabbitmqPermisson is the Schema for the rabbitmqpermissons API
@@ -34,13 +42,46 @@ spec:
         spec:
           description: RabbitmqPermissonSpec defines the desired state of RabbitmqPermisson
           properties:
-            foo:
+            clusterRef:
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - name
+              - namespace
+              type: object
+            configure:
+              type: string
+            read:
+              type: string
+            username:
+              type: string
+            vhost:
               description: Foo is an example field of RabbitmqPermisson. Edit RabbitmqPermisson_types.go
                 to remove/update
               type: string
+            write:
+              type: string
+          required:
+          - clusterRef
+          - configure
+          - read
+          - write
           type: object
         status:
           description: RabbitmqPermissonStatus defines the observed state of RabbitmqPermisson
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
           type: object
       type: object
   version: v1beta1

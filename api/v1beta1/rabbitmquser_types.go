@@ -29,17 +29,23 @@ type RabbitmqUserSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of RabbitmqUser. Edit RabbitmqUser_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Name              string             `json:"name,omitempty"`
+	Tags              string             `json:"tags,omitempty"`
+	PasswordSecretRef PasswordSecretRef  `json:"secretRef,omitempty"`
+	ClusterRef        RabbitmqClusterRef `json:"clusterRef"`
 }
 
 // RabbitmqUserStatus defines the observed state of RabbitmqUser
 type RabbitmqUserStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Status string `json:"status"`
+	Error  string `json:"error,omitempty"`
 }
 
 // +kubebuilder:object:root=true
-
+// +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
+// +kubebuilder:printcolumn:name="Error",type=string,JSONPath=`.status.error`
 // RabbitmqUser is the Schema for the rabbitmqusers API
 type RabbitmqUser struct {
 	metav1.TypeMeta   `json:",inline"`

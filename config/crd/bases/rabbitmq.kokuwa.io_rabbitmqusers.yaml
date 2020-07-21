@@ -8,6 +8,13 @@ metadata:
   creationTimestamp: null
   name: rabbitmqusers.rabbitmq.kokuwa.io
 spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
   group: rabbitmq.kokuwa.io
   names:
     kind: RabbitmqUser
@@ -15,6 +22,7 @@ spec:
     plural: rabbitmqusers
     singular: rabbitmquser
   scope: Namespaced
+  subresources: {}
   validation:
     openAPIV3Schema:
       description: RabbitmqUser is the Schema for the rabbitmqusers API
@@ -34,13 +42,50 @@ spec:
         spec:
           description: RabbitmqUserSpec defines the desired state of RabbitmqUser
           properties:
-            foo:
+            clusterRef:
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - name
+              - namespace
+              type: object
+            name:
               description: Foo is an example field of RabbitmqUser. Edit RabbitmqUser_types.go
                 to remove/update
               type: string
+            secretRef:
+              properties:
+                key:
+                  type: string
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - key
+              - name
+              - namespace
+              type: object
+            tags:
+              type: string
+          required:
+          - clusterRef
           type: object
         status:
           description: RabbitmqUserStatus defines the observed state of RabbitmqUser
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
           type: object
       type: object
   version: v1beta1

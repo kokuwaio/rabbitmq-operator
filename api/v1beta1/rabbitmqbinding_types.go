@@ -47,7 +47,8 @@ type RabbitmqBindingStatus struct {
 }
 
 // +kubebuilder:object:root=true
-
+// +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
+// +kubebuilder:printcolumn:name="Error",type=string,JSONPath=`.status.error`
 // RabbitmqBinding is the Schema for the rabbitmqbindings API
 type RabbitmqBinding struct {
 	metav1.TypeMeta   `json:",inline"`

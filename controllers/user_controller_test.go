@@ -16,8 +16,8 @@ var _ = Context("Inside of a new namespace", func() {
 	ctx := context.TODO()
 	ns := SetupTest(ctx)
 
-	Describe("when no queue exists", func() {
-		It("should create a new queue", func() {
+	Describe("when no user exists", func() {
+		It("should create a new user", func() {
 
 			rabbitHost := rabbitConfig.Url
 			rabbitUser := rabbitConfig.User
@@ -26,7 +26,8 @@ var _ = Context("Inside of a new namespace", func() {
 			rabbitClusterName := "test-cluster"
 			secretName := "rabbit-secret"
 			passwordKey := "password"
-			rabbitQueueName := "test-queue"
+			rabbitUserName := "test-user"
+			passwordSecretName := "test-user-secret"
 
 			secret := &corev1.Secret{
 
@@ -58,23 +59,32 @@ var _ = Context("Inside of a new namespace", func() {
 			Expect(k8sClient.Create(context.Background(), toCreate)).Should(Succeed())
 			time.Sleep(time.Second * 5)
 
-			queue := &rabbitmqv1beta1.RabbitmqQueue{
+			passwordSecret := &corev1.Secret{
+
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-queue",
+					Name:      passwordSecretName,
 					Namespace: ns.Name,
 				},
-				Spec: rabbitmqv1beta1.RabbitmqQueueSpec{
-					Vhost: "/",
-					Name:  rabbitQueueName,
+				StringData: map[string]string{"password": "dummy"},
+				Type:       "Opaque",
+			}
+			Expect(k8sClient.Create(context.Background(), passwordSecret)).Should(Succeed())
+
+			queue := &rabbitmqv1beta1.RabbitmqUser{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      rabbitUserName,
+					Namespace: ns.Name,
+				},
+				Spec: rabbitmqv1beta1.RabbitmqUserSpec{
+					Name: rabbitUserName,
+					Tags: "user",
+					PasswordSecretRef: rabbitmqv1beta1.PasswordSecretRef{
+						Name:      passwordSecretName,
+						Namespace: ns.Name,
+					},
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
 						Name:      rabbitClusterName,
 						Namespace: ns.Name,
-					},
-					Settings: rabbitmqv1beta1.RabbitmqQueueSetting{
-						Type:       "",
-						Durable:    false,
-						AutoDelete: false,
-						Arguments:  nil,
 					},
 				},
 			}
@@ -85,7 +95,7 @@ var _ = Context("Inside of a new namespace", func() {
 			client, err := rabbithole.NewClient(rabbitHost, rabbitUser, password)
 			Expect(err).NotTo(HaveOccurred())
 
-			rq, err := client.GetQueue("/", rabbitQueueName)
+			rq, err := client.GetUser(rabbitUserName)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(rq).ShouldNot(BeNil())
 		})

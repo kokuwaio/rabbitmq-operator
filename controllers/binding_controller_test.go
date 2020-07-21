@@ -16,8 +16,8 @@ var _ = Context("Inside of a new namespace", func() {
 	ctx := context.TODO()
 	ns := SetupTest(ctx)
 
-	Describe("when no queue exists", func() {
-		It("should create a new queue", func() {
+	Describe("when no binding exists", func() {
+		It("should create a new binding", func() {
 
 			rabbitHost := rabbitConfig.Url
 			rabbitUser := rabbitConfig.User
@@ -26,7 +26,8 @@ var _ = Context("Inside of a new namespace", func() {
 			rabbitClusterName := "test-cluster"
 			secretName := "rabbit-secret"
 			passwordKey := "password"
-			rabbitQueueName := "test-queue"
+			rabbitExchangeName := "test-binding-exchange"
+			rabbitQueueName := "test-binding-queue"
 
 			secret := &corev1.Secret{
 
@@ -58,6 +59,27 @@ var _ = Context("Inside of a new namespace", func() {
 			Expect(k8sClient.Create(context.Background(), toCreate)).Should(Succeed())
 			time.Sleep(time.Second * 5)
 
+			exchange := &rabbitmqv1beta1.RabbitmqExchange{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      rabbitExchangeName,
+					Namespace: ns.Name,
+				},
+				Spec: rabbitmqv1beta1.RabbitmqExchangeSpec{
+					Vhost: "/",
+					Name:  rabbitExchangeName,
+					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
+						Name:      rabbitClusterName,
+						Namespace: ns.Name,
+					},
+					Settings: rabbitmqv1beta1.RabbitmqExchangeSetting{
+						Type:       "fanout",
+						Durable:    false,
+						AutoDelete: false,
+						Arguments:  nil,
+					},
+				},
+			}
+
 			queue := &rabbitmqv1beta1.RabbitmqQueue{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      "test-queue",
@@ -79,15 +101,38 @@ var _ = Context("Inside of a new namespace", func() {
 				},
 			}
 
+			binding := &rabbitmqv1beta1.RabbitmqBinding{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "test-queue",
+					Namespace: ns.Name,
+				},
+				Spec: rabbitmqv1beta1.RabbitmqBindingSpec{
+					Vhost:           "/",
+					Source:          rabbitExchangeName,
+					Destination:     rabbitQueueName,
+					DestinationType: "queue",
+					RoutingKey:      "#",
+					Arguments:       nil,
+					PropertiesKey:   "",
+					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
+						Name:      rabbitClusterName,
+						Namespace: ns.Name,
+					},
+				},
+			}
+
+			Expect(k8sClient.Create(context.Background(), exchange)).Should(Succeed())
 			Expect(k8sClient.Create(context.Background(), queue)).Should(Succeed())
+			Expect(k8sClient.Create(context.Background(), binding)).Should(Succeed())
 			time.Sleep(time.Second * 5)
 
 			client, err := rabbithole.NewClient(rabbitHost, rabbitUser, password)
 			Expect(err).NotTo(HaveOccurred())
 
-			rq, err := client.GetQueue("/", rabbitQueueName)
+			rq, err := client.ListExchangeBindingsBetween("/", rabbitExchangeName, rabbitQueueName)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(rq).ShouldNot(BeNil())
+			Expect(len(rq) == 0).Should(BeTrue())
 		})
 	})
 })

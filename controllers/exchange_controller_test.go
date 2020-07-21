@@ -16,8 +16,8 @@ var _ = Context("Inside of a new namespace", func() {
 	ctx := context.TODO()
 	ns := SetupTest(ctx)
 
-	Describe("when no queue exists", func() {
-		It("should create a new queue", func() {
+	Describe("when no exchange exists", func() {
+		It("should create a new exchange", func() {
 
 			rabbitHost := rabbitConfig.Url
 			rabbitUser := rabbitConfig.User
@@ -26,7 +26,7 @@ var _ = Context("Inside of a new namespace", func() {
 			rabbitClusterName := "test-cluster"
 			secretName := "rabbit-secret"
 			passwordKey := "password"
-			rabbitQueueName := "test-queue"
+			rabbitExchangeName := "test-exchange"
 
 			secret := &corev1.Secret{
 
@@ -58,20 +58,20 @@ var _ = Context("Inside of a new namespace", func() {
 			Expect(k8sClient.Create(context.Background(), toCreate)).Should(Succeed())
 			time.Sleep(time.Second * 5)
 
-			queue := &rabbitmqv1beta1.RabbitmqQueue{
+			exchange := &rabbitmqv1beta1.RabbitmqExchange{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-queue",
+					Name:      rabbitExchangeName,
 					Namespace: ns.Name,
 				},
-				Spec: rabbitmqv1beta1.RabbitmqQueueSpec{
+				Spec: rabbitmqv1beta1.RabbitmqExchangeSpec{
 					Vhost: "/",
-					Name:  rabbitQueueName,
+					Name:  rabbitExchangeName,
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
 						Name:      rabbitClusterName,
 						Namespace: ns.Name,
 					},
-					Settings: rabbitmqv1beta1.RabbitmqQueueSetting{
-						Type:       "",
+					Settings: rabbitmqv1beta1.RabbitmqExchangeSetting{
+						Type:       "fanout",
 						Durable:    false,
 						AutoDelete: false,
 						Arguments:  nil,
@@ -79,13 +79,13 @@ var _ = Context("Inside of a new namespace", func() {
 				},
 			}
 
-			Expect(k8sClient.Create(context.Background(), queue)).Should(Succeed())
+			Expect(k8sClient.Create(context.Background(), exchange)).Should(Succeed())
 			time.Sleep(time.Second * 5)
 
 			client, err := rabbithole.NewClient(rabbitHost, rabbitUser, password)
 			Expect(err).NotTo(HaveOccurred())
 
-			rq, err := client.GetQueue("/", rabbitQueueName)
+			rq, err := client.GetExchange("/", rabbitExchangeName)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(rq).ShouldNot(BeNil())
 		})

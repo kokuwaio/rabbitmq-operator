@@ -29,17 +29,25 @@ type RabbitmqPermissonSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of RabbitmqPermisson. Edit RabbitmqPermisson_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Vhost      string             `json:"vhost,omitempty"`
+	UserName   string             `json:"username,omitempty"`
+	Configure  string             `json:"configure"`
+	Write      string             `json:"write"`
+	Read       string             `json:"read"`
+	ClusterRef RabbitmqClusterRef `json:"clusterRef"`
 }
 
 // RabbitmqPermissonStatus defines the observed state of RabbitmqPermisson
 type RabbitmqPermissonStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Status string `json:"status"`
+	Error  string `json:"error,omitempty"`
 }
 
 // +kubebuilder:object:root=true
-
+// +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
+// +kubebuilder:printcolumn:name="Error",type=string,JSONPath=`.status.error`
 // RabbitmqPermisson is the Schema for the rabbitmqpermissons API
 type RabbitmqPermisson struct {
 	metav1.TypeMeta   `json:",inline"`

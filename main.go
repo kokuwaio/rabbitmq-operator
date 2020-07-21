@@ -76,7 +76,7 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "RabbitmqUser")
 		os.Exit(1)
 	}
-	if err = (&controllers.RabbitmqPermissonReconciler{
+	if err = (&controllers.RabbitmqPermissionReconciler{
 		Client: mgr.GetClient(),
 		Log:    ctrl.Log.WithName("controllers").WithName("RabbitmqPermisson"),
 		Scheme: mgr.GetScheme(),
