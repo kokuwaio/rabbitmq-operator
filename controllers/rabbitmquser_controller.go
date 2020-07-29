@@ -80,6 +80,36 @@ func (r *RabbitmqUserReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 		return reconcile.Result{}, err
 	}
 
+	if instance.ObjectMeta.DeletionTimestamp.IsZero() {
+		// The object is not being deleted, so if it does not have our finalizer,
+		// then lets add the finalizer and update the object.
+		if !containsString(instance.ObjectMeta.Finalizers, rabbitmqFinalizer) {
+			instance.ObjectMeta.Finalizers = append(instance.ObjectMeta.Finalizers, rabbitmqFinalizer)
+			if err := r.Update(context.Background(), instance); err != nil {
+				return reconcile.Result{Requeue: true}, nil
+			}
+		}
+	} else {
+		// The object is being deleted
+		if containsString(instance.ObjectMeta.Finalizers, rabbitmqFinalizer) {
+			// our finalizer is present, so lets handle our external dependency
+			if _, err := rabbitClient.DeleteUser(instance.Spec.Name); err != nil {
+				// if fail to delete the external dependency here, return with error
+				// so that it can be retried
+				return reconcile.Result{}, err
+			}
+
+			// remove our finalizer from the list and update it.
+			instance.ObjectMeta.Finalizers = removeString(instance.ObjectMeta.Finalizers, rabbitmqFinalizer)
+			if err := r.Update(context.Background(), instance); err != nil {
+				return reconcile.Result{Requeue: true}, nil
+			}
+		}
+
+		// Our finalizer has finished, so the reconciler can do nothing.
+		return reconcile.Result{}, nil
+	}
+
 	secret := &corev1.Secret{}
 	err = r.Get(ctx, types.NamespacedName{Name: instance.Spec.PasswordSecretRef.Name, Namespace: instance.Spec.PasswordSecretRef.Namespace}, secret)
 	if err != nil {

@@ -4,8 +4,22 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
-  name: manager-role
+  name: rabbitmq-controller-role
 rules:
+- apiGroups:
+    - ""
+  resources:
+    - secrets
+    - configmaps
+    - events
+  verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
 - apiGroups:
   - rabbitmq.kokuwa.io
   resources:
