@@ -313,6 +313,8 @@ github.com/michaelklishin/rabbit-hole/v2 v2.1.0 h1:3ZKJqtXunAKhtQfDmJiA6MFYqUtAe
 github.com/michaelklishin/rabbit-hole/v2 v2.1.0/go.mod h1:2CxUwsJizwcl9DwEdKCkyDI3NQE65y63FWXrbanDaOc=
 github.com/michaelklishin/rabbit-hole/v2 v2.3.0 h1:H0pWvTI1vn+w45FUC/hS1OGcSvUFtjKcwOEaQfJwI6Q=
 github.com/michaelklishin/rabbit-hole/v2 v2.3.0/go.mod h1:K/tVmMabAv145OQ1OX9OqTQngEVcInZc5vuY8yLlbcc=
+github.com/michaelklishin/rabbit-hole/v2 v2.3.1-0.20200716114234-7493bea2575c h1:h6HU7s5OMMpQzwgeOZrsc3kqHIZgBUJpYRgmJnMrVZY=
+github.com/michaelklishin/rabbit-hole/v2 v2.3.1-0.20200716114234-7493bea2575c/go.mod h1:dcF8Es0SVM/MjrpnOGItpt2xo9h3gjELsxqe5Ezk6OM=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

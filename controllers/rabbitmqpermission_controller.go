@@ -102,8 +102,13 @@ func (r *RabbitmqPermissionReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 
 func (r *RabbitmqPermissionReconciler) UpdateErrorState(context context.Context, instance *rabbitmqv1beta1.RabbitmqPermisson, err error) {
 	instance.Status.Status = "Error"
-	instance.Status.Error = err.Error()
-	r.Log.Error(err, err.Error())
+	if ferr, ok := err.(*rabbithole.ErrorResponse); ok {
+		instance.Status.Error = ferr.Message
+		r.Log.Error(err, ferr.Message)
+	} else {
+		instance.Status.Error = err.Error()
+		r.Log.Error(err, err.Error())
+	}
 	err = r.Update(context, instance)
 }
 
