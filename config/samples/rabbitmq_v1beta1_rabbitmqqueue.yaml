@@ -7,7 +7,6 @@ spec:
   vhost: /
   clusterRef:
     name: rabbitmqcluster-sample
-    namespace: kiwios
   settings:
     type: ""
-    durable: false
+    durable: true

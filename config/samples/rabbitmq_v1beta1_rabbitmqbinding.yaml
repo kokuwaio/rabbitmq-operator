@@ -11,6 +11,5 @@ spec:
   routing_key: "#"
   clusterRef:
     name: rabbitmqcluster-sample
-    namespace: kiwios
 
 

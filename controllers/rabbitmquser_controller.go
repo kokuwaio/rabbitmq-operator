@@ -111,7 +111,11 @@ func (r *RabbitmqUserReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 	}
 
 	secret := &corev1.Secret{}
-	err = r.Get(ctx, types.NamespacedName{Name: instance.Spec.PasswordSecretRef.Name, Namespace: instance.Spec.PasswordSecretRef.Namespace}, secret)
+	ns := instance.Spec.PasswordSecretRef.Namespace
+	if ns == "" {
+		ns = instance.Namespace
+	}
+	err = r.Get(ctx, types.NamespacedName{Name: instance.Spec.PasswordSecretRef.Name, Namespace: ns}, secret)
 	if err != nil {
 		r.UpdateErrorState(ctx, instance, err)
 		return reconcile.Result{}, err

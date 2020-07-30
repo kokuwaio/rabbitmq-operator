@@ -84,8 +84,7 @@ var _ = Context("Inside of a new namespace", func() {
 						Namespace: ns.Name,
 					},
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
-						Name:      rabbitClusterName,
-						Namespace: ns.Name,
+						Name: rabbitClusterName,
 					},
 				},
 			}
@@ -167,8 +166,7 @@ var _ = Context("Inside of a new namespace", func() {
 						Namespace: ns.Name,
 					},
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
-						Name:      rabbitClusterName,
-						Namespace: ns.Name,
+						Name: rabbitClusterName,
 					},
 				},
 			}

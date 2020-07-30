@@ -29,8 +29,8 @@ type RabbitmqPermissonSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of RabbitmqPermisson. Edit RabbitmqPermisson_types.go to remove/update
-	Vhost      string             `json:"vhost,omitempty"`
-	UserName   string             `json:"username,omitempty"`
+	Vhost      string             `json:"vhost"`
+	UserName   string             `json:"username"`
 	Configure  string             `json:"configure"`
 	Write      string             `json:"write"`
 	Read       string             `json:"read"`

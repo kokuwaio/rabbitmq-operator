@@ -55,7 +55,7 @@ func (r *RabbitmqPermissionReconciler) Reconcile(req ctrl.Request) (ctrl.Result,
 		if errors.IsNotFound(err) {
 			// Object not found, return.  Created objects are automatically garbage collected.
 			// For additional cleanup logic use finalizers.
-			r.Log.Info("rabbitmq exchange deleted", "name", req.NamespacedName)
+			r.Log.Info("rabbitmq permissions deleted", "name", req.NamespacedName)
 			return reconcile.Result{}, nil
 		}
 		// Error reading the object - requeue the request.
