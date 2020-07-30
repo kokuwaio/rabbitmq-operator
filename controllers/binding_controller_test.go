@@ -68,8 +68,7 @@ var _ = Context("Inside of a new namespace", func() {
 					Vhost: "/",
 					Name:  rabbitExchangeName,
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
-						Name:      rabbitClusterName,
-						Namespace: ns.Name,
+						Name: rabbitClusterName,
 					},
 					Settings: rabbitmqv1beta1.RabbitmqExchangeSetting{
 						Type:       "fanout",
@@ -89,8 +88,7 @@ var _ = Context("Inside of a new namespace", func() {
 					Vhost: "/",
 					Name:  rabbitQueueName,
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
-						Name:      rabbitClusterName,
-						Namespace: ns.Name,
+						Name: rabbitClusterName,
 					},
 					Settings: rabbitmqv1beta1.RabbitmqQueueSetting{
 						Type:       "",
@@ -115,8 +113,7 @@ var _ = Context("Inside of a new namespace", func() {
 					Arguments:       nil,
 					PropertiesKey:   "",
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
-						Name:      rabbitClusterName,
-						Namespace: ns.Name,
+						Name: rabbitClusterName,
 					},
 				},
 			}

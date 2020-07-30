@@ -24,14 +24,13 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 type RabbitmqClusterRef struct {
-	Name      string `json:"name"`
-	Namespace string `json:"namespace"`
+	Name string `json:"name"`
 }
 
 type PasswordSecretRef struct {
 	Name      string `json:"name"`
-	Namespace string `json:"namespace"`
-	Key       string `json:"key"`
+	Namespace string `json:"namespace,omitempty"`
+	Key       string `json:"key,omitempty"`
 }
 
 type RabbitmqQueueSetting struct {

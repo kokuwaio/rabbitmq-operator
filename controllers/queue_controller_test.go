@@ -67,8 +67,7 @@ var _ = Context("Inside of a new namespace", func() {
 					Vhost: "/",
 					Name:  rabbitQueueName,
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
-						Name:      rabbitClusterName,
-						Namespace: ns.Name,
+						Name: rabbitClusterName,
 					},
 					Settings: rabbitmqv1beta1.RabbitmqQueueSetting{
 						Type:       "",

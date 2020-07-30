@@ -46,11 +46,8 @@ spec:
               properties:
                 name:
                   type: string
-                namespace:
-                  type: string
               required:
               - name
-              - namespace
               type: object
             configure:
               type: string
@@ -68,6 +65,8 @@ spec:
           - clusterRef
           - configure
           - read
+          - username
+          - vhost
           - write
           type: object
         status:

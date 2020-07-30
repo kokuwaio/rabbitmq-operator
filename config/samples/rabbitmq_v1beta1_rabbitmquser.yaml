@@ -4,4 +4,11 @@ metadata:
   name: rabbitmquser-sample
 spec:
   # Add fields here
-  foo: bar
+  name: bar
+  tags: administrator
+  secretRef:
+    name: my-secret
+    namespace: kiwios
+    key: password
+  clusterRef:
+    name: rabbitmqcluster-sample
