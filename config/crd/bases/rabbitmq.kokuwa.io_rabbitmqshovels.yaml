@@ -1,0 +1,149 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: rabbitmqshovels.rabbitmq.kokuwa.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
+  group: rabbitmq.kokuwa.io
+  names:
+    kind: RabbitmqShovel
+    listKind: RabbitmqShovelList
+    plural: rabbitmqshovels
+    singular: rabbitmqshovel
+  scope: Namespaced
+  subresources: {}
+  validation:
+    openAPIV3Schema:
+      description: RabbitmqShovel is the Schema for the rabbitmqshovels API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: RabbitmqShovelSpec defines the desired state of RabbitmqShovel
+          properties:
+            ackMode:
+              type: string
+            addForwardHeaders:
+              type: boolean
+            clusterRef:
+              description: Foo is an example field of RabbitmqShovel. Edit RabbitmqShovel_types.go
+                to remove/update
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+              type: object
+            deleteAfter:
+              type: string
+            destinationAddForwardHeaders:
+              type: boolean
+            destinationAddTimestampHeader:
+              type: boolean
+            destinationAddress:
+              type: string
+            destinationExchange:
+              type: string
+            destinationExchangeKey:
+              type: string
+            destinationProtocol:
+              type: string
+            destinationQueue:
+              type: string
+            destinationSecretRef:
+              properties:
+                key:
+                  type: string
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - name
+              type: object
+            destinationURI:
+              type: string
+            destinationUser:
+              type: string
+            name:
+              type: string
+            sourceAddress:
+              type: string
+            sourceExchange:
+              type: string
+            sourceExchangeKey:
+              type: string
+            sourceProtocol:
+              type: string
+            sourceQueue:
+              type: string
+            sourceSecretRef:
+              properties:
+                key:
+                  type: string
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - name
+              type: object
+            sourceURI:
+              type: string
+            sourceUser:
+              type: string
+            srcDeleteAfter:
+              type: string
+            vhost:
+              type: string
+          required:
+          - clusterRef
+          - name
+          - vhost
+          type: object
+        status:
+          description: RabbitmqShovelStatus defines the observed state of RabbitmqShovel
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

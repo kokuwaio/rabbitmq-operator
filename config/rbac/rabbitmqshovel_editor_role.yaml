@@ -1,0 +1,24 @@
+# permissions for end users to edit rabbitmqshovels.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rabbitmqshovel-editor-role
+rules:
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqshovels
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rabbitmq.kokuwa.io
+  resources:
+  - rabbitmqshovels/status
+  verbs:
+  - get

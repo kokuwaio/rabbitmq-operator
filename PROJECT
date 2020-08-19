@@ -19,4 +19,7 @@ resources:
 - group: rabbitmq
   kind: RabbitmqCluster
   version: v1beta1
+- group: rabbitmq
+  kind: RabbitmqShovel
+  version: v1beta1
 version: "2"
