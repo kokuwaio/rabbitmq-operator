@@ -111,6 +111,9 @@ var _ = BeforeSuite(func(done Done) {
 	err = rabbitmqv1beta1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
+	err = rabbitmqv1beta1.AddToScheme(scheme.Scheme)
+	Expect(err).NotTo(HaveOccurred())
+
 	// +kubebuilder:scaffold:scheme
 
 	close(done)

@@ -120,6 +120,14 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "RabbitmqCluster")
 		os.Exit(1)
 	}
+	if err = (&controllers.RabbitmqShovelReconciler{
+		Client: mgr.GetClient(),
+		Log:    ctrl.Log.WithName("controllers").WithName("RabbitmqShovel"),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "RabbitmqShovel")
+		os.Exit(1)
+	}
 	// +kubebuilder:scaffold:builder
 
 	setupLog.Info("starting manager")
