@@ -91,7 +91,7 @@ func (r *RabbitmqShovelReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 		// The object is being deleted
 		if containsString(instance.ObjectMeta.Finalizers, rabbitmqFinalizer) {
 			// our finalizer is present, so lets handle our external dependency
-			if _, err := rabbitClient.DeleteUser(instance.Spec.Name); err != nil {
+			if _, err := rabbitClient.DeleteShovel(instance.Spec.Vhost, instance.Spec.Name); err != nil {
 				// if fail to delete the external dependency here, return with error
 				// so that it can be retried
 				return reconcile.Result{}, err
