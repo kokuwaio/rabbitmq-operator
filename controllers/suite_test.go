@@ -122,7 +122,7 @@ var _ = BeforeSuite(func(done Done) {
 func SetupTest(ctx context.Context) *corev1.Namespace {
 	var stopCh chan struct{}
 	ns := &corev1.Namespace{}
-
+	var rabbitC testcontainers.Container
 	BeforeEach(func() {
 		stopCh = make(chan struct{})
 		*ns = corev1.Namespace{
@@ -197,6 +197,12 @@ func SetupTest(ctx context.Context) *corev1.Namespace {
 		err = permissonController.SetupWithManager(mgr)
 		Expect(err).NotTo(HaveOccurred(), "failed to setup permisson controller")
 
+		bindingController := &RabbitmqBindingReconciler{
+			Client: mgr.GetClient(),
+			Log:    logf.Log,
+		}
+		err = bindingController.SetupWithManager(mgr)
+		Expect(err).NotTo(HaveOccurred(), "failed to setup binding controller")
 		go func() {
 			err := mgr.Start(stopCh)
 			Expect(err).NotTo(HaveOccurred(), "failed to start manager")
@@ -204,6 +210,9 @@ func SetupTest(ctx context.Context) *corev1.Namespace {
 	})
 
 	AfterEach(func() {
+		if rabbitC != nil {
+			rabbitC.Terminate(context.Background())
+		}
 		close(stopCh)
 		/*
 			client, err := rabbithole.NewClient("", "", "")
