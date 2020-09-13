@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"time"
 
 	rabbitmqv1beta1 "github.com/kokuwaio/rabbitmq-operator/api/v1beta1"
@@ -110,8 +112,6 @@ var _ = Context("Inside of a new namespace", func() {
 					Destination:     rabbitQueueName,
 					DestinationType: "queue",
 					RoutingKey:      "#",
-					Arguments:       nil,
-					PropertiesKey:   "",
 					ClusterRef: rabbitmqv1beta1.RabbitmqClusterRef{
 						Name: rabbitClusterName,
 					},
@@ -126,10 +126,21 @@ var _ = Context("Inside of a new namespace", func() {
 			client, err := rabbithole.NewClient(rabbitHost, rabbitUser, password)
 			Expect(err).NotTo(HaveOccurred())
 
-			rq, err := client.ListExchangeBindingsBetween("/", rabbitExchangeName, rabbitQueueName)
+			list := &rabbitmqv1beta1.RabbitmqBindingList{}
+			Expect(k8sClient.List(context.Background(), list)).Should(Succeed())
+
+			rq, err := client.ListQueueBindings("/", rabbitQueueName)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(rq).ShouldNot(BeNil())
-			Expect(len(rq) == 0).Should(BeTrue())
+			Expect(len(rq) == 2).Should(BeTrue())
+			fmt.Fprintf(os.Stdout, "bindings: %v", rq)
+
+			Expect(k8sClient.Delete(context.Background(), binding)).Should(Succeed())
+			time.Sleep(time.Second * 5)
+			rq, err = client.ListQueueBindings("/", rabbitQueueName)
+
+			fmt.Fprintf(os.Stdout, "bindings: %v", rq)
+			Expect(len(rq) == 1).Should(BeTrue())
 		})
 	})
 })

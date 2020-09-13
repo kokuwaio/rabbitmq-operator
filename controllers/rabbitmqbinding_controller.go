@@ -88,10 +88,19 @@ func (r *RabbitmqBindingReconciler) Reconcile(req ctrl.Request) (ctrl.Result, er
 		if containsString(instance.ObjectMeta.Finalizers, rabbitmqFinalizer) {
 			// our finalizer is present, so lets handle our external dependency
 			//TODO
-			if _, err := rabbitClient.DeleteBinding(instance.Spec.Vhost, r.transformSettings(instance.Spec)); err != nil {
-				// if fail to delete the external dependency here, return with error
-				// so that it can be retried
+			bindings, err := rabbitClient.ListQueueBindings(instance.Spec.Vhost, instance.Spec.Destination)
+			if err != nil {
 				return reconcile.Result{}, err
+			}
+			if binding, ok := r.checkIfBindingExists(bindings, instance.Spec); ok {
+				if _, err := rabbitClient.DeleteBinding(instance.Spec.Vhost, *binding); err != nil {
+					// if fail to delete the external dependency here, return with error
+					// so that it can be retried
+					r.Log.Info("error deleting binding", "err", err)
+					return reconcile.Result{}, err
+				}
+			} else {
+				r.Log.Info("binding does not exists remove it anyway")
 			}
 
 			// remove our finalizer from the list and update it.
@@ -105,13 +114,14 @@ func (r *RabbitmqBindingReconciler) Reconcile(req ctrl.Request) (ctrl.Result, er
 		return reconcile.Result{}, nil
 	}
 
-	bindings, err := rabbitClient.ListExchangeBindingsBetween(instance.Spec.Vhost, instance.Spec.Source, instance.Spec.Destination)
+	bindings, err := rabbitClient.ListQueueBindings(instance.Spec.Vhost, instance.Spec.Destination)
 	if err != nil {
 		r.UpdateErrorState(ctx, instance, err)
 		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
-	if len(bindings) == 0 {
+	if _, ok := r.checkIfBindingExists(bindings, instance.Spec); !ok {
+
 		// declare a binding
 		_, err = rabbitClient.DeclareBinding(instance.Spec.Vhost, r.transformSettings(instance.Spec))
 		if err != nil {
@@ -128,15 +138,31 @@ func (r *RabbitmqBindingReconciler) Reconcile(req ctrl.Request) (ctrl.Result, er
 }
 
 func (r *RabbitmqBindingReconciler) transformSettings(settings rabbitmqv1beta1.RabbitmqBindingSpec) rabbithole.BindingInfo {
+	result := make(map[string]interface{})
+	if settings.Arguments != nil {
+		for k, v := range settings.Arguments {
+			result[k] = v
+		}
+	}
+
 	return rabbithole.BindingInfo{
-		Vhost:           settings.Vhost,
 		Source:          settings.Source,
 		Destination:     settings.Destination,
 		DestinationType: settings.DestinationType,
 		RoutingKey:      settings.RoutingKey,
-		// TODO
-		//Arguments: settings.Arguments,
-		PropertiesKey: settings.PropertiesKey,
+		Arguments:       result,
+		PropertiesKey:   settings.PropertiesKey,
+	}
+}
+
+func (r *RabbitmqBindingReconciler) transformSettingsForDelete(settings rabbitmqv1beta1.RabbitmqBindingSpec) rabbithole.BindingInfo {
+
+	return rabbithole.BindingInfo{
+		Source:          settings.Source,
+		Destination:     settings.Destination,
+		DestinationType: settings.DestinationType,
+		RoutingKey:      settings.RoutingKey,
+		PropertiesKey:   "%23",
 	}
 }
 
@@ -150,4 +176,13 @@ func (r *RabbitmqBindingReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&rabbitmqv1beta1.RabbitmqBinding{}).
 		Complete(r)
+}
+
+func (r *RabbitmqBindingReconciler) checkIfBindingExists(bindings []rabbithole.BindingInfo, spec rabbitmqv1beta1.RabbitmqBindingSpec) (*rabbithole.BindingInfo, bool) {
+	for _, binding := range bindings {
+		if binding.Destination == spec.Destination && binding.Source == binding.Source && binding.RoutingKey == spec.RoutingKey {
+			return &binding, true
+		}
+	}
+	return nil, false
 }
