@@ -15,4 +15,3 @@ RUN curl -fsSL https://download.opensuse.org/repositories/devel:/kubic:/libconta
 
 USER gitpod
 # Install custom tools, runtime, etc.
-RUN brew install fzf podman
