@@ -13,5 +13,7 @@ RUN curl -fsSL https://download.opensuse.org/repositories/devel:/kubic:/libconta
     && apt-get -qq -y install podman \
     && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/*
 
+ADD https://raw.githubusercontent.com/containers/buildah/master/contrib/buildahimage/stable/containers.conf /etc/containers/
+
 USER gitpod
 # Install custom tools, runtime, etc.
