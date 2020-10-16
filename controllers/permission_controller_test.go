@@ -50,9 +50,9 @@ var _ = Context("Inside of a new namespace", func() {
 					Host: rabbitHost,
 					User: rabbitUser,
 					SecretRef: rabbitmqv1beta1.SecretRef{
-						Name:      secretName,
-						Namespace: ns.Name,
-						Key:       passwordKey,
+						Name:        secretName,
+						Namespace:   ns.Name,
+						PasswordKey: passwordKey,
 					},
 				},
 			}
@@ -157,9 +157,9 @@ var _ = Context("Inside of a new namespace", func() {
 					Host: rabbitHost,
 					User: rabbitUser,
 					SecretRef: rabbitmqv1beta1.SecretRef{
-						Name:      secretName,
-						Namespace: ns.Name,
-						Key:       passwordKey,
+						Name:        secretName,
+						Namespace:   ns.Name,
+						PasswordKey: passwordKey,
 					},
 				},
 			}

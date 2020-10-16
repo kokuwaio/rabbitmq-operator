@@ -20,6 +20,10 @@ func (s *Service) GetRabbitClient(cluster *rabbitmqv1beta1.RabbitmqCluster, read
 	if err != nil {
 		return nil, err
 	}
-	bytes := secret.Data[cluster.Spec.SecretRef.Key]
-	return rabbithole.NewClient(cluster.Spec.Host, cluster.Spec.User, string(bytes))
+	bytes := secret.Data[cluster.Spec.SecretRef.PasswordKey]
+	user := cluster.Spec.User
+	if cluster.Spec.SecretRef.UserKey != "" {
+		user = string(secret.Data[cluster.Spec.SecretRef.UserKey])
+	}
+	return rabbithole.NewClient(cluster.Spec.Host, user, string(bytes))
 }

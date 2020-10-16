@@ -24,9 +24,10 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 type SecretRef struct {
-	Name      string `json:"name"`
-	Namespace string `json:"namespace"`
-	Key       string `json:"key,omitempty"`
+	Name        string `json:"name"`
+	Namespace   string `json:"namespace"`
+	UserKey     string `json:"userKey,omitempty"`
+	PasswordKey string `json:"passwordKey,omitempty"`
 }
 
 // RabbitmqClusterSpec defines the desired state of RabbitmqCluster
