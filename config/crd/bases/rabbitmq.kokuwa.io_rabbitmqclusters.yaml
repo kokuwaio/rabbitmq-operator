@@ -51,11 +51,13 @@ spec:
               type: string
             secretRef:
               properties:
-                key:
-                  type: string
                 name:
                   type: string
                 namespace:
+                  type: string
+                passwordKey:
+                  type: string
+                userKey:
                   type: string
               required:
               - name
