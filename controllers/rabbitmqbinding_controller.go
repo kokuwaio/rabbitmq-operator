@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-logr/logr"
 	rabbithole "github.com/michaelklishin/rabbit-hole/v2"
@@ -26,7 +27,9 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	rabbitmqv1beta1 "github.com/kokuwaio/rabbitmq-operator/api/v1beta1"
 )
@@ -38,6 +41,9 @@ type RabbitmqBindingReconciler struct {
 	Scheme  *runtime.Scheme
 	Service *Service
 }
+
+const DestinationTypeQueue = "queue"
+const DestinationTypeExchange = "exchange"
 
 // +kubebuilder:rbac:groups=rabbitmq.kokuwa.io,resources=rabbitmqbindings,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=rabbitmq.kokuwa.io,resources=rabbitmqbindings/status,verbs=get;update;patch
@@ -87,11 +93,23 @@ func (r *RabbitmqBindingReconciler) Reconcile(req ctrl.Request) (ctrl.Result, er
 		// The object is being deleted
 		if containsString(instance.ObjectMeta.Finalizers, rabbitmqFinalizer) {
 			// our finalizer is present, so lets handle our external dependency
-			//TODO
-			bindings, err := rabbitClient.ListQueueBindings(instance.Spec.Vhost, instance.Spec.Destination)
-			if err != nil {
+			var bindings []rabbithole.BindingInfo
+			if instance.Spec.DestinationType == DestinationTypeQueue {
+				bindings, err = rabbitClient.ListQueueBindings(instance.Spec.Vhost, instance.Spec.Destination)
+				if err != nil {
+					return reconcile.Result{}, err
+				}
+			} else if instance.Spec.DestinationType == DestinationTypeExchange {
+				bindings, err = rabbitClient.ListExchangeBindings(instance.Spec.Vhost, instance.Spec.Destination, rabbithole.BindingSource)
+				if err != nil {
+					return reconcile.Result{}, err
+				}
+			} else {
+				err = fmt.Errorf("unkown destination_type %v", instance.Spec.DestinationType)
+				r.UpdateErrorState(ctx, instance, err)
 				return reconcile.Result{}, err
 			}
+
 			if binding, ok := r.checkIfBindingExists(bindings, instance.Spec); ok {
 				if _, err := rabbitClient.DeleteBinding(instance.Spec.Vhost, *binding); err != nil {
 					// if fail to delete the external dependency here, return with error
@@ -114,10 +132,22 @@ func (r *RabbitmqBindingReconciler) Reconcile(req ctrl.Request) (ctrl.Result, er
 		return reconcile.Result{}, nil
 	}
 
-	bindings, err := rabbitClient.ListQueueBindings(instance.Spec.Vhost, instance.Spec.Destination)
-	if err != nil {
+	var bindings []rabbithole.BindingInfo
+	if instance.Spec.DestinationType == DestinationTypeQueue {
+		bindings, err = rabbitClient.ListQueueBindings(instance.Spec.Vhost, instance.Spec.Destination)
+		if err != nil {
+			r.UpdateErrorState(ctx, instance, err)
+			return reconcile.Result{}, err
+		}
+	} else if instance.Spec.DestinationType == DestinationTypeExchange {
+		bindings, err = rabbitClient.ListExchangeBindings(instance.Spec.Vhost, instance.Spec.Destination, rabbithole.BindingSource)
+		if err != nil {
+			r.UpdateErrorState(ctx, instance, err)
+			return reconcile.Result{}, err
+		}
+	} else {
+		err = fmt.Errorf("unkown destination_type %v", instance.Spec.DestinationType)
 		r.UpdateErrorState(ctx, instance, err)
-		// Error reading the object - requeue the request.
 		return reconcile.Result{}, err
 	}
 	if _, ok := r.checkIfBindingExists(bindings, instance.Spec); !ok {
@@ -175,6 +205,7 @@ func (r *RabbitmqBindingReconciler) UpdateErrorState(context context.Context, in
 func (r *RabbitmqBindingReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&rabbitmqv1beta1.RabbitmqBinding{}).
+		Watches(&source.Kind{Type: &rabbitmqv1beta1.RabbitmqCluster{}}, &handler.EnqueueRequestForObject{}).
 		Complete(r)
 }
 
