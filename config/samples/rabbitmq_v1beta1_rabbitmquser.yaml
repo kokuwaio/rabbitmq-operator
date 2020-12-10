@@ -8,7 +8,7 @@ spec:
   tags: administrator
   secretRef:
     name: my-secret
-    namespace: kiwios
+    namespace: default
     key: password
   clusterRef:
     name: rabbitmqcluster-sample

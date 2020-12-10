@@ -15,8 +15,6 @@ spec:
         control-plane: controller-manager
     spec:
       serviceAccountName: rabbitmq-controller
-      imagePullSecrets:
-      - name: regcred
       containers:
       - command:
         - /manager
