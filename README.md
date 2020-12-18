@@ -85,7 +85,7 @@ spec:
     name: rabbitmqcluster-sample
 ```
 
-### creating a queue
+### Creating a Queue
 
 
 # Future Plan
