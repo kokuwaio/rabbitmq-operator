@@ -4,7 +4,8 @@
 ![CI build and Deploy](https://github.com/kokuwaio/rabbitmq-operator/workflows/CI%20build%20and%20Deploy/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/kokuwaio/rabbitmq-operator/badge.svg?branch=master)](https://coveralls.io/github/kokuwaio/rabbitmq-operator?branch=master)
 
-This is a operator which handles rabbitmq resources via kubernetes custom resource definitions. To manage rabbitmq clsuters you can use for example the [rabbitmq operator](https://github.com/rabbitmq/cluster-operator).
+This is a operator which handles rabbitmq resources via kubernetes custom resource definitions.
+To manage rabbitmq clusters you can use the [rabbitmq operator](https://github.com/rabbitmq/cluster-operator) for instance.
 
 # Supported CRDs
 
