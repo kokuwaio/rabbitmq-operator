@@ -57,7 +57,7 @@ spec:
     userKey: rabbitmq-user
 ```
 
-### creating a user
+### Creating a User
 
 password secret:
 
