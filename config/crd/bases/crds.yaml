@@ -1,0 +1,743 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: rabbitmqbindings.rabbitmq.kokuwa.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
+  group: rabbitmq.kokuwa.io
+  names:
+    kind: RabbitmqBinding
+    listKind: RabbitmqBindingList
+    plural: rabbitmqbindings
+    singular: rabbitmqbinding
+  scope: Namespaced
+  subresources: {}
+  validation:
+    openAPIV3Schema:
+      description: RabbitmqBinding is the Schema for the rabbitmqbindings API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: RabbitmqBindingSpec defines the desired state of RabbitmqBinding
+          properties:
+            arguments:
+              additionalProperties:
+                type: string
+              type: object
+            clusterRef:
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+              type: object
+            destination:
+              type: string
+            destination_type:
+              type: string
+            properties_key:
+              type: string
+            routing_key:
+              type: string
+            source:
+              type: string
+            vhost:
+              type: string
+          required:
+          - clusterRef
+          - destination
+          - destination_type
+          - routing_key
+          - source
+          - vhost
+          type: object
+        status:
+          description: RabbitmqBindingStatus defines the observed state of RabbitmqBinding
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: rabbitmqclusters.rabbitmq.kokuwa.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .spec.host
+    name: Host
+    type: string
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
+  group: rabbitmq.kokuwa.io
+  names:
+    kind: RabbitmqCluster
+    listKind: RabbitmqClusterList
+    plural: rabbitmqclusters
+    singular: rabbitmqcluster
+  scope: Cluster
+  subresources: {}
+  validation:
+    openAPIV3Schema:
+      description: RabbitmqCluster is the Schema for the rabbitmqclusters API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: RabbitmqClusterSpec defines the desired state of RabbitmqCluster
+          properties:
+            host:
+              description: Foo is an example field of RabbitmqCluster. Edit RabbitmqCluster_types.go
+                to remove/update
+              type: string
+            secretRef:
+              properties:
+                name:
+                  type: string
+                namespace:
+                  type: string
+                passwordKey:
+                  type: string
+                userKey:
+                  type: string
+              required:
+              - name
+              - namespace
+              type: object
+            user:
+              description: kubebuilder:default=default
+              type: string
+          required:
+          - host
+          type: object
+        status:
+          description: RabbitmqClusterStatus defines the observed state of RabbitmqCluster
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: rabbitmqexchanges.rabbitmq.kokuwa.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
+  group: rabbitmq.kokuwa.io
+  names:
+    kind: RabbitmqExchange
+    listKind: RabbitmqExchangeList
+    plural: rabbitmqexchanges
+    singular: rabbitmqexchange
+  scope: Namespaced
+  subresources: {}
+  validation:
+    openAPIV3Schema:
+      description: RabbitmqExchange is the Schema for the rabbitmqexchanges API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: RabbitmqExchangeSpec defines the desired state of RabbitmqExchange
+          properties:
+            clusterRef:
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+              type: object
+            name:
+              type: string
+            settings:
+              properties:
+                arguments:
+                  additionalProperties:
+                    type: string
+                  type: object
+                auto_delete:
+                  type: boolean
+                durable:
+                  description: kubebuilder:default=false
+                  type: boolean
+                type:
+                  type: string
+              required:
+              - durable
+              - type
+              type: object
+            vhost:
+              description: Foo is an example field of RabbitmqExchange. Edit RabbitmqExchange_types.go
+                to remove/update
+              type: string
+          required:
+          - clusterRef
+          - settings
+          type: object
+        status:
+          description: RabbitmqExchangeStatus defines the observed state of RabbitmqExchange
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: rabbitmqpermissons.rabbitmq.kokuwa.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
+  group: rabbitmq.kokuwa.io
+  names:
+    kind: RabbitmqPermisson
+    listKind: RabbitmqPermissonList
+    plural: rabbitmqpermissons
+    singular: rabbitmqpermisson
+  scope: Namespaced
+  subresources: {}
+  validation:
+    openAPIV3Schema:
+      description: RabbitmqPermisson is the Schema for the rabbitmqpermissons API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: RabbitmqPermissonSpec defines the desired state of RabbitmqPermisson
+          properties:
+            clusterRef:
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+              type: object
+            configure:
+              type: string
+            read:
+              type: string
+            username:
+              type: string
+            vhost:
+              description: Foo is an example field of RabbitmqPermisson. Edit RabbitmqPermisson_types.go
+                to remove/update
+              type: string
+            write:
+              type: string
+          required:
+          - clusterRef
+          - configure
+          - read
+          - username
+          - vhost
+          - write
+          type: object
+        status:
+          description: RabbitmqPermissonStatus defines the observed state of RabbitmqPermisson
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: rabbitmqqueues.rabbitmq.kokuwa.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
+  group: rabbitmq.kokuwa.io
+  names:
+    kind: RabbitmqQueue
+    listKind: RabbitmqQueueList
+    plural: rabbitmqqueues
+    singular: rabbitmqqueue
+  scope: Namespaced
+  subresources: {}
+  validation:
+    openAPIV3Schema:
+      description: RabbitmqQueue is the Schema for the rabbitmqqueues API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: RabbitmqQueueSpec defines the desired state of RabbitmqQueue
+          properties:
+            clusterRef:
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+              type: object
+            name:
+              type: string
+            settings:
+              properties:
+                arguments:
+                  additionalProperties:
+                    type: string
+                  type: object
+                auto_delete:
+                  type: boolean
+                durable:
+                  description: kubebuilder:default=false
+                  type: boolean
+                type:
+                  type: string
+              required:
+              - durable
+              - type
+              type: object
+            vhost:
+              description: Foo is an example field of RabbitmqQueue. Edit RabbitmqQueue_types.go
+                to remove/update kubebuilder:default=/
+              type: string
+          required:
+          - clusterRef
+          - settings
+          type: object
+        status:
+          description: RabbitmqQueueStatus defines the observed state of RabbitmqQueue
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: rabbitmqshovels.rabbitmq.kokuwa.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
+  group: rabbitmq.kokuwa.io
+  names:
+    kind: RabbitmqShovel
+    listKind: RabbitmqShovelList
+    plural: rabbitmqshovels
+    singular: rabbitmqshovel
+  scope: Namespaced
+  subresources: {}
+  validation:
+    openAPIV3Schema:
+      description: RabbitmqShovel is the Schema for the rabbitmqshovels API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: RabbitmqShovelSpec defines the desired state of RabbitmqShovel
+          properties:
+            ackMode:
+              type: string
+            addForwardHeaders:
+              type: boolean
+            clusterRef:
+              description: Foo is an example field of RabbitmqShovel. Edit RabbitmqShovel_types.go
+                to remove/update
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+              type: object
+            deleteAfter:
+              type: string
+            destinationAddForwardHeaders:
+              type: boolean
+            destinationAddTimestampHeader:
+              type: boolean
+            destinationAddress:
+              type: string
+            destinationExchange:
+              type: string
+            destinationExchangeKey:
+              type: string
+            destinationProtocol:
+              type: string
+            destinationQueue:
+              type: string
+            destinationSecretRef:
+              properties:
+                key:
+                  type: string
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - name
+              type: object
+            destinationURI:
+              type: string
+            destinationUser:
+              type: string
+            name:
+              type: string
+            sourceAddress:
+              type: string
+            sourceExchange:
+              type: string
+            sourceExchangeKey:
+              type: string
+            sourceProtocol:
+              type: string
+            sourceQueue:
+              type: string
+            sourceSecretRef:
+              properties:
+                key:
+                  type: string
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - name
+              type: object
+            sourceURI:
+              type: string
+            sourceUser:
+              type: string
+            srcDeleteAfter:
+              type: string
+            vhost:
+              type: string
+          required:
+          - clusterRef
+          - name
+          - vhost
+          type: object
+        status:
+          description: RabbitmqShovelStatus defines the observed state of RabbitmqShovel
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: rabbitmqusers.rabbitmq.kokuwa.io
+spec:
+  additionalPrinterColumns:
+  - JSONPath: .status.status
+    name: Status
+    type: string
+  - JSONPath: .status.error
+    name: Error
+    type: string
+  group: rabbitmq.kokuwa.io
+  names:
+    kind: RabbitmqUser
+    listKind: RabbitmqUserList
+    plural: rabbitmqusers
+    singular: rabbitmquser
+  scope: Namespaced
+  subresources: {}
+  validation:
+    openAPIV3Schema:
+      description: RabbitmqUser is the Schema for the rabbitmqusers API
+      properties:
+        apiVersion:
+          description: 'APIVersion defines the versioned schema of this representation
+            of an object. Servers should convert recognized schemas to the latest
+            internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+          type: string
+        kind:
+          description: 'Kind is a string value representing the REST resource this
+            object represents. Servers may infer this from the endpoint the client
+            submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+          type: string
+        metadata:
+          type: object
+        spec:
+          description: RabbitmqUserSpec defines the desired state of RabbitmqUser
+          properties:
+            clusterRef:
+              properties:
+                name:
+                  type: string
+              required:
+              - name
+              type: object
+            name:
+              description: Foo is an example field of RabbitmqUser. Edit RabbitmqUser_types.go
+                to remove/update
+              type: string
+            secretRef:
+              properties:
+                key:
+                  type: string
+                name:
+                  type: string
+                namespace:
+                  type: string
+              required:
+              - name
+              type: object
+            tags:
+              type: string
+          required:
+          - clusterRef
+          type: object
+        status:
+          description: RabbitmqUserStatus defines the observed state of RabbitmqUser
+          properties:
+            error:
+              type: string
+            status:
+              description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                of cluster Important: Run "make" to regenerate code after modifying
+                this file'
+              type: string
+          required:
+          - status
+          type: object
+      type: object
+  version: v1beta1
+  versions:
+  - name: v1beta1
+    served: true
+    storage: true
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

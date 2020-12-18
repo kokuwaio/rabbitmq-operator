@@ -3,10 +3,9 @@ kind: RabbitmqCluster
 metadata:
   name: rabbitmqcluster-sample
 spec:
-  # Add fields here
-  host: http://rabbitmq.kiwios.svc:15672
+  host: http://rabbitmq.default.svc:15672
   user: admin
   secretRef:
     name: rabbitmq
-    namespace: kiwios
+    namespace: default
     key: rabbitmq-password
