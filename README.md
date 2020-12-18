@@ -32,7 +32,7 @@ kubectl apply -f https://raw.githubusercontent.com/kokuwaio/rabbitmq-operator/ma
 
 ## Using the operator
 
-### creating a cluster reference
+### Creating a Cluster Reference
 
 ```yaml
 apiVersion: rabbitmq.kokuwa.io/v1beta1
